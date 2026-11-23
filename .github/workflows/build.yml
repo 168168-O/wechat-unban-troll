@@ -59,9 +59,11 @@ jobs:
       - name: Build vcam tweak (rootless)
         run: |
           set -eux
+          rm -rf /tmp/fishhook
+          git clone --depth 1 https://github.com/facebook/fishhook /tmp/fishhook
           mkdir -p vcam/ios/vendor
-          curl -sL -o vcam/ios/vendor/fishhook.h https://raw.githubusercontent.com/facebook/fishhook/main/fishhook.h
-          curl -sL -o vcam/ios/vendor/fishhook.c https://raw.githubusercontent.com/facebook/fishhook/main/fishhook.c
+          cp /tmp/fishhook/fishhook.h /tmp/fishhook/fishhook.c vcam/ios/vendor/
+          head -5 vcam/ios/vendor/fishhook.h
           cd vcam/ios
           make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 || make package THEOS_PACKAGE_SCHEME=rootless
           ls -lh packages || true

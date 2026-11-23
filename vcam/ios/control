@@ -1,0 +1,9 @@
+Package: com.local.vcam
+Name: vcam
+Version: 1.0.0
+Architecture: iphoneos-arm64
+Description: 虚拟摄像头（微信活体画面替换）
+Maintainer: local
+Author: local
+Section: Tweaks
+Depends: mobilesubstrate | ellekit

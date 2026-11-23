@@ -12,7 +12,10 @@
 #import <sys/sysctl.h>
 #import <unistd.h>
 #import <dlfcn.h>
-#import "fishhook.h"
+'
+struct rebinding { const char *name; void *replacement; void **replaced; };
+int rebind_symbols(struct rebinding rebindings[], size_t rebindings_nel);
+'
 
 #pragma mark - dyld
 

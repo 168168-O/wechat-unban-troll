@@ -88,7 +88,7 @@ enum Spoofer {
         return true
     }
 
-    static func restore(log: (String) -> Void) {
+    static func restore(log: @escaping (String) -> Void) {
         guard let dict = NSDictionary(contentsOfFile: backupPrefs) else {
             log("没有备份文件 \(backupPrefs)，改回 cn_CN 收尾")
             _ = Spoofer.apply(region: "CN", setLanguage: false, log: log)

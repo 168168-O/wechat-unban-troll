@@ -112,7 +112,7 @@ enum Templates {
 
     static let loginRestriction = TemplateItem(
         id: "login",
-        title: "1. Login restricted / environment anomaly",
+        title: "1. 登录受限 / 环境异常（Login restricted）",
         subject: "Appeal: login restriction on WeChat ID {{WECHAT_ID}} — registered number {{CC}} {{PHONE}}",
         body: """
         Dear WeChat Support Team,
@@ -161,7 +161,7 @@ enum Templates {
 
     static let reportedContent = TemplateItem(
         id: "reported",
-        title: "2. Reported by other users / content complaint",
+        title: "2. 被他人举报 / 内容投诉（Reported）",
         subject: "Appeal: account {{WECHAT_ID}} restricted after a user report — request for review",
         body: """
         Dear WeChat Support Team,
@@ -202,7 +202,7 @@ enum Templates {
 
     static let marketingFlag = TemplateItem(
         id: "marketing",
-        title: "3. Flagged for bulk registration / marketing",
+        title: "3. 误判批量注册 / 营销（Marketing）",
         subject: "Appeal: false positive on WeChat ID {{WECHAT_ID}} — single personal account, no automation",
         body: """
         Dear WeChat Support Team,
@@ -242,7 +242,7 @@ enum Templates {
 
     static let stolenAccount = TemplateItem(
         id: "stolen",
-        title: "4. Account taken over, then restricted",
+        title: "4. 账号被盗后被封（Taken over）",
         subject: "Urgent: account {{WECHAT_ID}} was taken over — appeal against resulting restriction",
         body: """
         Dear WeChat Support Team,
@@ -283,7 +283,7 @@ enum Templates {
 
     static let newDevice = TemplateItem(
         id: "device",
-        title: "5. New phone / changed number, login blocked",
+        title: "5. 换机换号后被拦（New phone）",
         subject: "Appeal: login blocked after device change — WeChat ID {{WECHAT_ID}}",
         body: """
         Dear WeChat Support Team,
@@ -319,7 +319,7 @@ enum Templates {
 
     static let paymentRestriction = TemplateItem(
         id: "payment",
-        title: "6. WeChat Pay / wallet restricted",
+        title: "6. 微信支付受限（WeChat Pay）",
         subject: "Appeal: WeChat Pay restriction on account {{WECHAT_ID}} — funds held",
         body: """
         Dear WeChat Support Team,

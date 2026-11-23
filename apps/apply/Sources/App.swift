@@ -35,7 +35,7 @@ enum Scene: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-struct Form {
+struct ApplyForm {
     var wxid = ""
     var nickname = ""
     var cc = "+95"
@@ -197,7 +197,7 @@ struct RootView: View {
 
 enum Texts {
 
-    static func cn(_ f: Form, subject: String) -> String {
+    static func cn(_ f: ApplyForm, subject: String) -> String {
         """
         \(subject)
 
@@ -228,7 +228,7 @@ enum Texts {
         """
     }
 
-    static func en(_ f: Form) -> String {
+    static func en(_ f: ApplyForm) -> String {
         """
         Dear WeChat Support Team,
 
@@ -276,7 +276,7 @@ enum Texts {
 // ───────────── 存储 ─────────────
 
 final class Store: ObservableObject {
-    @Published var form = Form() {
+    @Published var form = ApplyForm() {
         didSet { save() }
     }
 
@@ -285,7 +285,7 @@ final class Store: ObservableObject {
     init() {
         if let d = UserDefaults.standard.data(forKey: key),
            let f = try? JSONDecoder().decode(Codable.self, from: d) {
-            form = Form(wxid: f.wxid, nickname: f.nickname, cc: f.cc, phone: f.phone,
+            form = ApplyForm(wxid: f.wxid, nickname: f.nickname, cc: f.cc, phone: f.phone,
                         email: f.email, region: f.region, location: f.location,
                         banText: f.banText, date: f.date, device: f.device,
                         ios: f.ios, scene: Scene(rawValue: f.scene) ?? .cross)

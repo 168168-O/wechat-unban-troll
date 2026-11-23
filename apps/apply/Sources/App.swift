@@ -22,7 +22,7 @@ enum Channel: String, CaseIterable {
     }
 }
 
-enum Scene: String, CaseIterable, Identifiable {
+enum Situation: String, CaseIterable, Identifiable {
     case login = "登录受限 / 环境异常"
     case report = "被他人举报 / 内容投诉"
     case market = "误判批量注册 / 营销"
@@ -47,7 +47,7 @@ struct ApplyForm {
     var date = ""
     var device = "iPhone 12"
     var ios = "17.6"
-    var scene: Scene = .cross
+    var scene: Situation = .cross
 }
 
 @main
@@ -90,7 +90,7 @@ struct RootView: View {
 
                 Section(header: Text("申请方式")) {
                     Picker("选一种", selection: $store.form.scene) {
-                        ForEach(Scene.allCases) { s in
+                        ForEach(Situation.allCases) { s in
                             Text(s.rawValue).tag(s)
                         }
                     }
@@ -144,7 +144,7 @@ struct RootView: View {
                         url: channel.applyURL,
                         email: store.form.email,
                         subject: subject(),
-                        body: channel == .cn ? outCN : outEN)
+                        content: channel == .cn ? outCN : outEN)
             }
             .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { n in
                 if let f = n.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
@@ -284,16 +284,16 @@ final class Store: ObservableObject {
 
     init() {
         if let d = UserDefaults.standard.data(forKey: key),
-           let f = try? JSONDecoder().decode(Codable.self, from: d) {
+           let f = try? JSONDecoder().decode(Snapshot.self, from: d) {
             form = ApplyForm(wxid: f.wxid, nickname: f.nickname, cc: f.cc, phone: f.phone,
                         email: f.email, region: f.region, location: f.location,
                         banText: f.banText, date: f.date, device: f.device,
-                        ios: f.ios, scene: Scene(rawValue: f.scene) ?? .cross)
+                        ios: f.ios, scene: Situation(rawValue: f.scene) ?? .cross)
         }
     }
 
     func save() {
-        let c = Codable(wxid: form.wxid, nickname: form.nickname, cc: form.cc,
+        let c = Snapshot(wxid: form.wxid, nickname: form.nickname, cc: form.cc,
                         phone: form.phone, email: form.email, region: form.region,
                         location: form.location, banText: form.banText, date: form.date,
                         device: form.device, ios: form.ios, scene: form.scene.rawValue)
@@ -302,7 +302,7 @@ final class Store: ObservableObject {
         }
     }
 
-    struct Codable: Swift.Codable {
+    struct Snapshot: Swift.Codable {
         var wxid = "", nickname = "", cc = "+95", phone = "", email = ""
         var region = "", location = "", banText = "", date = ""
         var device = "iPhone 12", ios = "17.6", scene = "跨境登录风控锁号"
@@ -316,7 +316,7 @@ struct WebFill: View {
     let url: String
     let email: String
     let subject: String
-    let body: String
+    let content: String
 
     @Environment(\.presentationMode) private var presentation
 
@@ -333,7 +333,7 @@ struct WebFill: View {
     }
 
     private var payload: String {
-        let d: [String: String] = ["email": email, "subject": subject, "body": body]
+        let d: [String: String] = ["email": email, "subject": subject, "body": content]
         let data = (try? JSONSerialization.data(withJSONObject: d, options: [])) ?? Data()
         return String(data: data, encoding: .utf8) ?? "{}"
     }

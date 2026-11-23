@@ -149,6 +149,18 @@ enum Appeal {
         """
     }
 
+    static func bilingual(_ i: AppealInput) -> String {
+        """
+        ═══════  中文（自己核对）  ═══════
+
+        \(chinese(i))
+
+        ═══════  English（提交这段）  ═══════
+
+        \(english(i))
+        """
+    }
+
     static func checklist() -> String {
         """
         提交前逐项过一遍，缺一项就先去补齐：

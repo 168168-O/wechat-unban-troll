@@ -24,17 +24,13 @@ jobs:
           SDK=$(xcrun --sdk iphoneos --show-sdk-path)
           APP="out/Payload/WeChatUnban.app"
           rm -rf out && mkdir -p "$APP"
-          xcrun --sdk iphoneos swiftc \
-            -parse-as-library -target arm64-apple-ios14.0 -sdk "$SDK" -O \
-            -module-name WeChatUnban \
-            -framework SwiftUI -framework UIKit -framework WebKit -framework Foundation \
-            apps/unban/Sources/*.swift \
-            -o "$APP/WeChatUnban"
+          xcrun --sdk iphoneos swiftc -parse-as-library -target arm64-apple-ios14.0 -sdk "$SDK" -O \
+            -module-name WeChatUnban -framework SwiftUI -framework UIKit -framework WebKit -framework Foundation \
+            apps/unban/Sources/*.swift -o "$APP/WeChatUnban"
           cp apps/unban/Resources/Info.plist "$APP/Info.plist"
           printf 'APPL????' > "$APP/PkgInfo"
           codesign --force --sign - --entitlements apps/unban/WeChatUnban.entitlements "$APP"
           cd out && zip -qry WeChatUnban.tipa Payload && cd ..
-          ls -lh out/WeChatUnban.tipa
 
       - name: Build ENAppeal.tipa
         run: |
@@ -42,37 +38,66 @@ jobs:
           SDK=$(xcrun --sdk iphoneos --show-sdk-path)
           APP="out2/Payload/ENAppeal.app"
           rm -rf out2 && mkdir -p "$APP"
-          xcrun --sdk iphoneos swiftc \
-            -parse-as-library -target arm64-apple-ios14.0 -sdk "$SDK" -O \
-            -module-name ENAppeal \
-            -framework SwiftUI -framework UIKit -framework WebKit -framework Foundation \
-            apps/apply/Sources/*.swift \
-            -o "$APP/ENAppeal"
+          xcrun --sdk iphoneos swiftc -parse-as-library -target arm64-apple-ios14.0 -sdk "$SDK" -O \
+            -module-name ENAppeal -framework SwiftUI -framework UIKit -framework WebKit -framework Foundation \
+            apps/apply/Sources/*.swift -o "$APP/ENAppeal"
           cp apps/appeal/Resources/Info.plist "$APP/Info.plist"
           printf 'APPL????' > "$APP/PkgInfo"
           codesign --force --sign - --entitlements apps/appeal/ENAppeal.entitlements "$APP"
           cd out2 && zip -qry ENAppeal.tipa Payload && cd ..
-          ls -lh out2/ENAppeal.tipa
+
+      - name: Install Theos
+        run: |
+          set -eux
+          git clone --recursive --depth 1 https://github.com/theos/theos.git "$HOME/theos"
+          mkdir -p "$HOME/theos/sdks"
+          curl -sL https://github.com/theos/sdks/archive/master.tar.gz -o /tmp/sdks.tgz
+          tar xzf /tmp/sdks.tgz -C /tmp
+          cp -r /tmp/sdks-master/*.sdk "$HOME/theos/sdks/" || true
+          echo "THEOS=$HOME/theos" >> "$GITHUB_ENV"
+
+      - name: Build vcam tweak (rootless)
+        run: |
+          set -eux
+          mkdir -p vcam/ios/vendor
+          curl -sL -o vcam/ios/vendor/fishhook.h https://raw.githubusercontent.com/facebook/fishhook/main/fishhook.h
+          curl -sL -o vcam/ios/vendor/fishhook.c https://raw.githubusercontent.com/facebook/fishhook/main/fishhook.c
+          cd vcam/ios
+          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 || make package THEOS_PACKAGE_SCHEME=rootless
+          ls -lh packages || true
+          DEB=$(ls packages/*.deb | head -n1)
+          mkdir -p "$GITHUB_WORKSPACE/out3"
+          cp "$DEB" "$GITHUB_WORKSPACE/out3/"
+          T=$(mktemp -d); cd "$T"
+          ar x "$GITHUB_WORKSPACE/$DEB" || ar x "$DEB"
+          ls
+          tar xf data.tar.* 2>/dev/null || true
+          find . -name 'vcam.dylib' -exec cp {} "$GITHUB_WORKSPACE/out3/vcam.dylib" \;
+          ls -lh "$GITHUB_WORKSPACE/out3"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: tipa
+          name: products
           path: |
             out/WeChatUnban.tipa
             out2/ENAppeal.tipa
-          if-no-files-found: error
+            out3/vcam.dylib
+            out3/*.deb
+          if-no-files-found: warn
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
-          name: 解封申请 v1.0.${{ github.run_number }}
+          name: 解封 + 虚拟摄像头 v1.0.${{ github.run_number }}
           body: |
-            TrollStore 直接安装（arm64 / iOS 14+）。
-
-            ENAppeal.tipa  单页解封申请：全中文表单 → 生成中英文 → 底部中国/国外两个按钮 → 点申请自动填入官方页面
-            WeChatUnban.tipa  设备环境工具：清指纹、改区域、测出口 IP
+            - ENAppeal.tipa     三屏解封申请（全中文 + 语音）
+            - WeChatUnban.tipa  设备环境工具
+            - vcam.dylib        KYC 用虚拟摄像头 tweak（注入微信）
+            - com.local.vcam_*.deb  越狱直接装
           files: |
             out/WeChatUnban.tipa
             out2/ENAppeal.tipa
-          fail_on_unmatched_files: true
+            out3/vcam.dylib
+            out3/*.deb
+          fail_on_unmatched_files: false

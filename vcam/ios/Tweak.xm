@@ -170,7 +170,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (delegate && [[ActionStore shared] enabled]) {
         VCDDelegateProxy *p = [VCDDelegateProxy new];
         p.real = delegate;
-        p.src = [ActionStore shared];
+        p.src = (id<VCFrameSourceLike>)[ActionStore shared];
         objc_setAssociatedObject(self, "vcam_proxy", p, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         [[ActionStore shared] start];
         NSLog(@"[vcam] 接管 setSampleBufferDelegate %@ 当前动作=%@", [delegate class], [[ActionStore shared] currentAction]);
@@ -209,7 +209,7 @@ static void vcam_reload(CFNotificationCenterRef c, void *obs, CFStringRef name,
 }
 
 %ctor {
-    NSLog(@"[vcam] 载入完成，素材目录: %@", kVCamDir);
+    NSLog(@"[vcam] 载入完成，素材目录: %@", @"/var/mobile/Documents/vcam");
     [[ActionStore shared] start];
     [[ActionStore shared] startServer];
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),

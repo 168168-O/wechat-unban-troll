@@ -62,15 +62,6 @@ struct AppealView: View {
                 }
             }
             .navigationTitle("申诉")
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("收键盘") {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
-                                                        to: nil, from: nil, for: nil)
-                    }
-                }
-            }
             .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { n in
                 if let f = n.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                     let h = UIScreen.main.bounds.height - f.origin.y

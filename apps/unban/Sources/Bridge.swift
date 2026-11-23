@@ -51,9 +51,11 @@ enum Bridge {
     static func run(_ path: String, _ args: [String] = []) -> String {
         guard fm.isExecutableFile(atPath: path) else { return "跳过: \(path) 没执行权限" }
         var pid = pid_t()
-        var argv: [UnsafeMutablePointer<CChar>?] = ([path] + args).map { strdup($0) }
+        let argvStrings: [String] = [path] + args
+        var argv: [UnsafeMutablePointer<CChar>?] = argvStrings.map { strdup($0) }
         argv.append(nil)
-        var envp: [UnsafeMutablePointer<CChar>?] = ["PATH=/usr/bin:/bin:/usr/sbin:/sbin", "HOME=/var/mobile"].map { strdup($0) }
+        let envStrings: [String] = ["PATH=/usr/bin:/bin:/usr/sbin:/sbin", "HOME=/var/mobile"]
+        var envp: [UnsafeMutablePointer<CChar>?] = envStrings.map { strdup($0) }
         envp.append(nil)
         let rc = posix_spawn(&pid, path, nil, nil, argv, envp)
         argv.forEach { free($0) }

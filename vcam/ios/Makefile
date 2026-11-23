@@ -6,7 +6,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = vcam
 vcam_FILES = Tweak.xm ActionStore.m ActionServer.m ControlPanel.m Stealth.xm JBHide.xm vendor/fishhook.c
-vcam_CFLAGS = -fobjc-arc
+vcam_CFLAGS = -fobjc-arc -Wno-error -Wno-unused-function -Wno-incompatible-pointer-types
 vcam_CFLAGS += -Ivendor
 vcam_FRAMEWORKS = AVFoundation CoreMedia CoreVideo UIKit
 

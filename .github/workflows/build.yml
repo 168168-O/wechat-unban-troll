@@ -1,0 +1,82 @@
+name: build-tipa
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tipa
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build WeChatUnban.tipa
+        run: |
+          set -euo pipefail
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          APP="out/Payload/WeChatUnban.app"
+          rm -rf out && mkdir -p "$APP"
+          xcrun --sdk iphoneos swiftc \
+            -parse-as-library -target arm64-apple-ios14.0 -sdk "$SDK" -O \
+            -module-name WeChatUnban \
+            -framework SwiftUI -framework UIKit -framework WebKit -framework Foundation \
+            apps/unban/Sources/*.swift \
+            -o "$APP/WeChatUnban"
+          cp apps/unban/Resources/Info.plist "$APP/Info.plist"
+          printf 'APPL????' > "$APP/PkgInfo"
+          codesign --force --sign - --entitlements apps/unban/WeChatUnban.entitlements "$APP"
+          cd out && zip -qry WeChatUnban.tipa Payload && cd ..
+          ls -lh out/WeChatUnban.tipa
+          file "$APP/WeChatUnban"
+
+      - name: Build ENAppeal.tipa
+        run: |
+          set -euo pipefail
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          APP="out2/Payload/ENAppeal.app"
+          rm -rf out2 && mkdir -p "$APP"
+          xcrun --sdk iphoneos swiftc \
+            -parse-as-library -target arm64-apple-ios14.0 -sdk "$SDK" -O \
+            -module-name ENAppeal \
+            -framework SwiftUI -framework UIKit -framework WebKit -framework Foundation \
+            apps/appeal/Sources/*.swift \
+            -o "$APP/ENAppeal"
+          cp apps/appeal/Resources/Info.plist "$APP/Info.plist"
+          printf 'APPL????' > "$APP/PkgInfo"
+          codesign --force --sign - --entitlements apps/appeal/ENAppeal.entitlements "$APP"
+          cd out2 && zip -qry ENAppeal.tipa Payload && cd ..
+          ls -lh out2/ENAppeal.tipa
+          file "$APP/ENAppeal"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tipa
+          path: |
+            out/WeChatUnban.tipa
+            out2/ENAppeal.tipa
+          if-no-files-found: error
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: 微信解封工具 v1.0.${{ github.run_number }}
+          body: |
+            TrollStore 直接安装的未签名 IPA（arm64 / iOS 14+）。
+
+            - WeChatUnban.tipa  解封工具：清指纹、改区域、测出口 IP、内嵌安全中心
+            - ENAppeal.tipa     英文申诉模板：10 套模板、中英对照、存档、照念
+
+            下载后在 TrollStore 里装。
+          files: |
+            out/WeChatUnban.tipa
+            out2/ENAppeal.tipa
+          fail_on_unmatched_files: true

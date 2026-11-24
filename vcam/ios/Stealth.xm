@@ -13,7 +13,7 @@
 #import <unistd.h>
 #import <dlfcn.h>
 struct rebinding { const char *name; void *replacement; void **replaced; };
-int rebind_symbols(struct rebinding rebindings[], size_t rebindings_nel);
+extern "C" int rebind_symbols(struct rebinding rebindings[], size_t rebindings_nel);
 
 #pragma mark - dyld
 

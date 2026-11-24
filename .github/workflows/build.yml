@@ -57,26 +57,20 @@ jobs:
           cp -r /tmp/sdks-master/*.sdk "$HOME/theos/sdks/" || true
           echo "THEOS=$HOME/theos" >> "$GITHUB_ENV"
 
-      - name: Build vcam tweak (rootless)
+      - name: Build CamSrc.dylib (rootless)
         run: |
           set -eux
           rm -rf /tmp/fishhook
           git clone --depth 1 https://github.com/facebook/fishhook /tmp/fishhook
           mkdir -p vcam/ios/vendor
           cp /tmp/fishhook/fishhook.h /tmp/fishhook/fishhook.c vcam/ios/vendor/
-          head -5 vcam/ios/vendor/fishhook.h
           cd vcam/ios
-          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 || make package THEOS_PACKAGE_SCHEME=rootless
-          ls -lh packages || true
-          DEB=$(ls packages/*.deb | head -n1)
+          make clean || true
+          make THEOS_PACKAGE_SCHEME=rootless || true
           mkdir -p "$GITHUB_WORKSPACE/out3"
-          cp "$DEB" "$GITHUB_WORKSPACE/out3/"
-          T=$(mktemp -d); cd "$T"
-          ar x "$GITHUB_WORKSPACE/$DEB" || ar x "$DEB"
-          ls
-          tar xf data.tar.* 2>/dev/null || true
-          find . -name 'vcam.dylib' -exec cp {} "$GITHUB_WORKSPACE/out3/vcam.dylib" \;
-          ls -lh "$GITHUB_WORKSPACE/out3"
+          find . -name 'CamSrc.dylib' -exec cp {} "$GITHUB_WORKSPACE/out3/CamSrc.dylib" \;
+          ls -lh "$GITHUB_WORKSPACE/out3" || true
+          file "$GITHUB_WORKSPACE/out3/CamSrc.dylib" || true
 
       - uses: actions/upload-artifact@v4
         with:
@@ -84,8 +78,7 @@ jobs:
           path: |
             out/WeChatUnban.tipa
             out2/ENAppeal.tipa
-            out3/vcam.dylib
-            out3/*.deb
+            out3/CamSrc.dylib
           if-no-files-found: warn
 
       - name: Publish release
@@ -96,11 +89,9 @@ jobs:
           body: |
             - ENAppeal.tipa     三屏解封申请（全中文 + 语音）
             - WeChatUnban.tipa  设备环境工具
-            - vcam.dylib        KYC 用虚拟摄像头 tweak（注入微信）
-            - com.local.vcam_*.deb  越狱直接装
+            - CamSrc.dylib      虚拟摄像头 tweak（注入微信）
           files: |
             out/WeChatUnban.tipa
             out2/ENAppeal.tipa
-            out3/vcam.dylib
-            out3/*.deb
+            out3/CamSrc.dylib
           fail_on_unmatched_files: false

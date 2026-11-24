@@ -18,7 +18,7 @@ static NSArray<NSArray<NSString *> *> *VCButtons(void) {
 
 static void VCRefreshTitle(void) {
     if (!gTitle) return;
-    gTitle.text = [NSString stringWithFormat:@"vcam · %@", [[ActionStore shared] currentAction]];
+    gTitle.text = [NSString stringWithFormat:@"camsrc · %@", [[ActionStore shared] currentAction]];
 }
 
 void VCPanelShow(void) {
@@ -96,7 +96,7 @@ void VCPanelShow(void) {
 
         gPanel = win;
         VCRefreshTitle();
-        NSLog(@"[vcam] 控制面板已显示，动作=%@", [[ActionStore shared] currentAction]);
+        NSLog(@"[camsrc] 控制面板已显示，动作=%@", [[ActionStore shared] currentAction]);
     });
 }
 

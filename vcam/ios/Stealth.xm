@@ -119,12 +119,12 @@ static pid_t st_fork(void) { return -1; }          // 越狱检测常查 fork �
 
 %ctor {
     struct rebinding r[] = {
-        {"_dyld_image_count",    st_image_count,    (void **)&orig_image_count},
-        {"_dyld_get_image_name", st_image_name,     (void **)&orig_image_name},
-        {"_dyld_get_image_header", st_image_header, (void **)&orig_image_header},
-        {"getppid",              st_getppid,        (void **)&orig_getppid},
-        {"ptrace",               st_ptrace,         (void **)&orig_ptrace},
-        {"fork",                 st_fork,           (void **)&orig_fork},
+        {"_dyld_image_count",    (void *)st_image_count,    (void **)&orig_image_count},
+        {"_dyld_get_image_name", (void *)st_image_name,     (void **)&orig_image_name},
+        {"_dyld_get_image_header", (void *)st_image_header, (void **)&orig_image_header},
+        {"getppid",              (void *)st_getppid,        (void **)&orig_getppid},
+        {"ptrace",               (void *)st_ptrace,         (void **)&orig_ptrace},
+        {"fork",                 (void *)st_fork,           (void **)&orig_fork},
     };
     rebind_symbols(r, sizeof(r) / sizeof(r[0]));
     NSLog(@"[stealth] 装载完成：dyld 过滤 / 路径白名单 / 进程伪装 / 相机元数据抖动");

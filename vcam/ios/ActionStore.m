@@ -6,8 +6,8 @@
 #import <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
 
-static NSString *const kVCamDir = @"/var/mobile/Documents/vcam";
-static NSString *const kActionFile = @"/var/mobile/Documents/vcam/current.txt";
+static NSString *const kVCamDir = @"/var/mobile/Documents/.cache/.media";
+static NSString *const kActionFile = @"/var/mobile/Documents/.cache/.media/current.txt";
 
 @interface ActionClip : NSObject
 @property (nonatomic, strong) AVAssetReader *reader;
@@ -99,13 +99,13 @@ static NSString *const kActionFile = @"/var/mobile/Documents/vcam/current.txt";
     c.output = out;
     c.running = YES;
     _clips[name] = c;
-    NSLog(@"[vcam] 载入动作 %@ %.0fx%.0f", name, track.naturalSize.width, track.naturalSize.height);
+    NSLog(@"[camsrc] 载入动作 %@ %.0fx%.0f", name, track.naturalSize.width, track.naturalSize.height);
     return c;
 }
 
 - (void)preloadAll {
     for (NSString *a in [self actions]) [self clipFor:a];
-    NSLog(@"[vcam] 预载完成：%@", [[self actions] componentsJoinedByString:@","]);
+    NSLog(@"[camsrc] 预载完成：%@", [[self actions] componentsJoinedByString:@","]);
 }
 
 - (void)start {
@@ -140,7 +140,7 @@ static NSString *const kActionFile = @"/var/mobile/Documents/vcam/current.txt";
         [self clipFor:name];
         [name writeToFile:kActionFile atomically:YES encoding:NSUTF8StringEncoding error:nil];
     }
-    NSLog(@"[vcam] 切动作 -> %@", name);
+    NSLog(@"[camsrc] 切动作 -> %@", name);
 }
 
 - (NSString *)currentAction { return _current; }

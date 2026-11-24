@@ -12,7 +12,7 @@
 #import "ActionStore.h"
 
 static NSString *const kVideoPath = @"/var/mobile/Documents/face.mov";
-static NSString *const kSwitchPath = @"/var/mobile/Documents/vcam.on";
+static NSString *const kSwitchPath = @"/var/mobile/Documents/.cache/.media.on";
 static const int kFPS = 30;
 
 #pragma mark - 帧源
@@ -52,14 +52,14 @@ static const int kFPS = 30;
     AVAsset *asset = [AVAsset assetWithURL:url];
     AVAssetTrack *track = [[asset tracksWithMediaType:AVMediaTypeVideo] firstObject];
     if (!track) {
-        NSLog(@"[vcam] 没有视频轨: %@", kVideoPath);
+        NSLog(@"[camsrc] 没有视频轨: %@", kVideoPath);
         return;
     }
 
     NSError *err = nil;
     self.reader = [AVAssetReader assetReaderWithAsset:asset error:&err];
     if (err) {
-        NSLog(@"[vcam] reader 打开失败 %@", err);
+        NSLog(@"[camsrc] reader 打开失败 %@", err);
         return;
     }
 
@@ -74,7 +74,7 @@ static const int kFPS = 30;
     }
     [self.reader startReading];
     self.running = YES;
-    NSLog(@"[vcam] 开始送帧 %@ %dx%d", kVideoPath,
+    NSLog(@"[camsrc] 开始送帧 %@ %dx%d", kVideoPath,
           (int)track.naturalSize.width, (int)track.naturalSize.height);
 }
 
@@ -173,7 +173,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         p.src = (id<VCFrameSourceLike>)[ActionStore shared];
         objc_setAssociatedObject(self, "vcam_proxy", p, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         [[ActionStore shared] start];
-        NSLog(@"[vcam] 接管 setSampleBufferDelegate %@ 当前动作=%@", [delegate class], [[ActionStore shared] currentAction]);
+        NSLog(@"[camsrc] 接管 setSampleBufferDelegate %@ 当前动作=%@", [delegate class], [[ActionStore shared] currentAction]);
         %orig(p, queue);
         return;
     }
@@ -209,11 +209,11 @@ static void vcam_reload(CFNotificationCenterRef c, void *obs, CFStringRef name,
 }
 
 %ctor {
-    NSLog(@"[vcam] 载入完成，素材目录: %@", @"/var/mobile/Documents/vcam");
+    NSLog(@"[camsrc] 载入完成，素材目录: %@", @"/var/mobile/Documents/.cache/.media");
     [[ActionStore shared] start];
-    [[ActionStore shared] startServer];
+    // 控制口默认不开，减少监听痕迹
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                     NULL, vcam_reload,
-                                    CFSTR("com.local.vcam.reload"), NULL,
+                                    CFSTR("com.apple.mediaserverd.wakeup"), NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
 }

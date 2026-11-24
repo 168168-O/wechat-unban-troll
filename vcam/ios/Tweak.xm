@@ -184,8 +184,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 #pragma mark - 摄像头开跑就弹控制面板
 
-extern void VCPanelShow(void);
-extern void VCPanelHide(void);
+extern "C" void VCPanelShow(void);
+extern "C" void VCPanelHide(void);
 
 %hook AVCaptureSession
 

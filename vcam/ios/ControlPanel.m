@@ -21,7 +21,7 @@ static void VCRefreshTitle(void) {
     gTitle.text = [NSString stringWithFormat:@"camsrc · %@", [[ActionStore shared] currentAction]];
 }
 
-extern "C" void VCPanelShow(void) {
+void VCPanelShow(void) {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (gPanel) { gPanel.hidden = NO; VCRefreshTitle(); return; }
 
@@ -100,7 +100,7 @@ extern "C" void VCPanelShow(void) {
     });
 }
 
-extern "C" void VCPanelHide(void) {
+void VCPanelHide(void) {
     dispatch_async(dispatch_get_main_queue(), ^{ gPanel.hidden = YES; });
 }
 

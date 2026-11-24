@@ -13,12 +13,12 @@ for p in /var/jb /var/xina /Library/MobileSubstrate; do
 done
 
 echo "[2/5] 检查 tweak 是否已注入"
-if [ -e /var/jb/Library/MobileSubstrate/DynamicLibraries/vcam.dylib ]; then
-  echo "    vcam.dylib 已在 /var/jb（rootless）"
-elif [ -e /Library/MobileSubstrate/DynamicLibraries/vcam.dylib ]; then
-  echo "    vcam.dylib 在 /Library（rootful）——这个包是 rootful 版"
+if [ -e /var/jb/Library/MobileSubstrate/DynamicLibraries/CamSrc.dylib ]; then
+  echo "    CamSrc.dylib 已在 /var/jb（rootless）"
+elif [ -e /Library/MobileSubstrate/DynamicLibraries/CamSrc.dylib ]; then
+  echo "    CamSrc.dylib 在 /Library（rootful）——这个包是 rootful 版"
 else
-  echo "    没找到 vcam.dylib，先装 deb"
+  echo "    没找到 CamSrc.dylib，先装 deb"
 fi
 
 echo "[3/5] 准备素材目录"

@@ -5,9 +5,9 @@ INSTALL_TARGET_PROCESSES = Weixin SpringBoard
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = CamSrc
-CamSrc_FILES = Tweak.xm ActionStore.m ActionServer.m ControlPanel.m Stealth.xm JBHide.xm vendor/fishhook.c
+CamSrc_FILES = Hook.m ActionStore.m ControlPanel.m
 CamSrc_CFLAGS = -fobjc-arc -Wno-error -Wno-unused-function -Wno-incompatible-pointer-types
-CamSrc_CFLAGS += -Ivendor
+
 CamSrc_FRAMEWORKS = AVFoundation CoreMedia CoreVideo UIKit
 
 include $(THEOS_MAKE_PATH)/tweak.mk

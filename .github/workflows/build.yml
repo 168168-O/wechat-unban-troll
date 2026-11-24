@@ -46,9 +46,10 @@ jobs:
           codesign --force --sign - --entitlements apps/appeal/ENAppeal.entitlements "$APP"
           cd out2 && zip -qry ENAppeal.tipa Payload && cd ..
 
-      - name: Install Theos
+      - name: Install ldid and Theos
         run: |
           set -eux
+          brew install ldid || true
           git clone --recursive --depth 1 https://github.com/theos/theos.git "$HOME/theos"
           mkdir -p "$HOME/theos/sdks"
           curl -sL https://github.com/theos/sdks/archive/master.tar.gz -o /tmp/sdks.tgz

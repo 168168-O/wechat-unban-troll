@@ -8,7 +8,7 @@ TWEAK_NAME = CamSrc
 CamSrc_FILES = Hook.m ActionStore.m ControlPanel.m
 CamSrc_CFLAGS = -fobjc-arc -Wno-error -Wno-unused-function -Wno-incompatible-pointer-types
 
-CamSrc_FRAMEWORKS = AVFoundation CoreMedia CoreVideo UIKit
+CamSrc_FRAMEWORKS = AVFoundation CoreMedia CoreVideo UIKit Photos
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
